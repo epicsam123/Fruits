@@ -1,0 +1,16 @@
+img {
+    height: 200px;
+    width: 200px;
+}
+
+#content {
+    text-align: center;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    grid-gap: 10px;
+}
