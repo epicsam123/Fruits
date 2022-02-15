@@ -1,4 +1,4 @@
-// Samuel Casellas 
+// Samuel
 // February 14th
 // CSE 121B
 
@@ -10,77 +10,105 @@ const FAT_INDEX = 1;
 const CARB_INDEX = 2;
 const CALORIE_INDEX = 3;
 
+const STAT_IDS = ["mango-data", "peach-data", "banana-data", "apple-data"];
+
 const PARAMS = {
 
-mango :  {
+"mango" :  {
     api_key : API_KEY,
     query : 'mango',
     dataType: ["Survey (FNDDS)"]
 
     },
 
-banana : {
+"banana" : {
     api_key : API_KEY,
     query : 'banana',
     dataType: ["Survey (FNDDS)"]
     },
 
-apple : {
+"apple" : {
     api_key : API_KEY,
     query : 'apple',
     dataType: ["Survey (FNDDS)"]
     },
 
-peach : {
+"peach" : {
     api_key : API_KEY,
     query : 'peach',
     dataType: ["Survey (FNDDS)"]
     }
 };
 
-const createQueryObject = () => { 
-    queryObject = new Object;
     
-    for (fruit in PARAMS) { // Iterate through each key
+let updateHTML = () => { // Main function
 
-    let adapted_url = `${FOOD_URL}${PARAMS[fruit].api_key}&query=${PARAMS[fruit].query}&dataType=${encodeURIComponent(PARAMS[fruit].dataType)}&pageSize=1`;
-    console.log(adapted_url)
-
-    fetch(adapted_url)
-    .then((response) => response.json())
-
-        /*
-        if (response.ok) {
-            return response.json();
+        let reset = (parentId) => {
+            let parent = document.getElementById(parentId);
+            while (parent.firstChild) {
+                parent.removeChild(parent.firstChild)
             }
-        else {
-            console.log("An error has occured.")
+        };
+    
+        let fetchData = (URL, fruit) => {
+            fetch(URL)
+            .then((response) => response.json())
+            .then((data) => {
+                insertData(data.foods[0].foodNutrients[index].value, fruit)
+        })
+        };
+
+        let insertData = (data, fruit) => {
+            let parent = document.getElementById(`${fruit}-data`)
+            let child = document.createElement("p")
+            console.log(`ready to put in ${data} for ${fruit}!`)
+            if (stat === "Calories") {
+                unit = "kcal";
+            }
+            else {
+                unit = "grams"
+            }
+            child.innerText = stat + ': ' + data + ' ' + unit;
+            parent.appendChild(child)
+    
         }
-        */
-    .then((data) => {queryObject[fruit] = data})
-}
+        
+        
+        STAT_IDS.map(reset) // Step 1: Reset stats
+    
+        stat = dropDown.value
+        
+        switch (stat) {
+            case "Carbs":
+                index = CARB_INDEX;
+                break;
+            case "Protein":
+                index = PROTEIN_INDEX;
+                break;
+    
+            case "Fats":
+                index = FAT_INDEX;
+                break;
+    
+            case "Calories":
+                index = CALORIE_INDEX;
+                break;
+    
+            default:
+                console.log("Value not identified!")
+        }
 
-    return queryObject; // Return an object with food names as keys and their respective json responses as values
-};
-
-const resetParent = function(parent) {
-    while (parent.firstChild){
-        parent.removeChild(parent.firstChild)
+        for (fruit in PARAMS) { // Iterate through each key
+            console.log(fruit)
+            let adapted_url = `${FOOD_URL}${PARAMS[fruit].api_key}&query=${PARAMS[fruit].query}&dataType=${encodeURIComponent(PARAMS[fruit].dataType)}&pageSize=1`;
+    
+            fetchData(adapted_url, fruit)
+    
     }
-};
 
-let updateHTML = function(object, stat) {
-    console.log(object)
-    console.log(Object.keys(object).length)
-    //console.log(object.foods)//.foodNutrients[0].value)
-}
+    };
 
 
 let dropDown = document.querySelector("#dropdown-select");
-let ourFoodObject = createQueryObject();
-
-updateHTML(ourFoodObject, 0)
-
-
-//dropDown.addEventListener('select', )
+dropDown.addEventListener('change', updateHTML)
 
